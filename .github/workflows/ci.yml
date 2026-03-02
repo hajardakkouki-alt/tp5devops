@@ -9,7 +9,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+ name: TP5
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: recuperer le code
@@ -20,13 +31,22 @@ jobs:
           python-version: "3.11"
       - name: installer les dependencies
         run: pip install -r requirements.txt
-      - name: verifier flake8
-        run: |
-          flake8 app --count --select=E9,F63,F7,F82,F841 --show-source --statistics
-          flake8 app --count --max-complexity=10 --max-line-length=127 --statistics
-          flake8 tests --count --max-line-length=127 --statistics
-      - name: lancer les tests
-        run: python -m pytest -v --cov=app
+      - name: installer flake8
+        run: pip install flake8
+      - name: executer lint
+        run: flake8 app/ tests/
+  test:
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Depend de lint
+        needs: lint
+      - name: execute uniquement si lint reussi
+        if: success()
+      - name: install dependances
+        run: pip install -r requirements.txt
+      - name: executer pytest
+        run: pytest tests/ -v --cov=src
+
 
 
 
