@@ -19,4 +19,5 @@ class UserManager:
         self.users.remove(username)
 
     def count_users(self):
-        return len(self.users)    
+        return len(self.users)
+    
